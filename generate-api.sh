@@ -1,20 +1,17 @@
-#!/usr/bin/env bash
+# Generate Api
+bin/apigen generate -s src -d ../gh-pages
+cd ../gh-pages
 
-# Build settings
-REPOSITORY=${REPOSITORY:-"https://${GH_TOKEN}@github.com/ApiGen/api.git"}
-BRANCH=${BRANCH:-"gh-pages"}
-BUILD_DIR=${BUILD_DIR:-"/tmp/generate-api"}
+# Set identity
+git config --global user.email "travis@travis-ci.org"
+git config --global user.name "Travis"
 
-# Git identity
-GIT_AUTHOR_NAME=${GIT_AUTHOR_NAME:-"Travis"}
-GIT_AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-"travis@travis-ci.org"}
+# Add branch
+git init
+git remote add origin https://${GH_TOKEN}@github.com/ApiGen/api.git > /dev/null
+git checkout -B gh-pages
 
-# Generate API
-git clone "${REPOSITORY}" "${BUILD_DIR}" --branch "${BRANCH}" --depth 1
-yes | bin/apigen generate -s src -d "${BUILD_DIR}"
-
-# Commit & push
-cd "${BUILD_DIR}" || exit 1
+# Push generated files
 git add .
-git commit -m "Generate API"
-git push origin "${BRANCH}"
+git commit -m "Api updated"
+git push origin gh-pages -fq > /dev/null
